@@ -4,12 +4,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   const workStartInput = document.getElementById('work-start');
   const workEndInput = document.getElementById('work-end');
   const earningsDisplay = document.getElementById('earnings-display');
+  const autoLaunchCheckbox = document.getElementById('auto-launch');
   
   // Load saved values
   const savedInfo = await window.salaryAPI.getSalaryInfo();
   annualSalaryInput.value = savedInfo.annualSalary;
   workStartInput.value = savedInfo.workStart;
   workEndInput.value = savedInfo.workEnd;
+  
+  // Load auto-launch setting
+  const autoLaunchEnabled = await window.salaryAPI.getAutoLaunch();
+  if (autoLaunchCheckbox) {
+    autoLaunchCheckbox.checked = autoLaunchEnabled;
+    
+    // Add event listener for auto-launch checkbox
+    autoLaunchCheckbox.addEventListener('change', async (e) => {
+      await window.salaryAPI.setAutoLaunch(e.target.checked);
+    });
+  }
   
   // Update earnings display
   function updateEarningsDisplay() {

@@ -14,6 +14,22 @@ const store = new Store();
 const DEFAULT_ANNUAL_SALARY = 120000;
 const DEFAULT_WORK_START = '09:00';
 const DEFAULT_WORK_END = '17:00';
+const DEFAULT_AUTO_LAUNCH = false;
+
+// Auto-launch setting
+function setAutoLaunch(enabled) {
+  app.setLoginItemSettings({
+    openAtLogin: enabled,
+    path: process.execPath
+  });
+  store.set('autoLaunch', enabled);
+  return enabled;
+}
+
+// Check if auto-launch is enabled
+function isAutoLaunchEnabled() {
+  return store.get('autoLaunch', DEFAULT_AUTO_LAUNCH);
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -62,9 +78,25 @@ function createTray() {
     toggleWindow();
   });
   
-  // Context menu
+  // Context menu with auto-launch option
+  updateContextMenu();
+}
+
+function updateContextMenu() {
+  const autoLaunchEnabled = isAutoLaunchEnabled();
+  
   const contextMenu = Menu.buildFromTemplate([
     { label: 'Show App', click: () => { mainWindow.show(); } },
+    { type: 'separator' },
+    { 
+      label: 'Start at Login', 
+      type: 'checkbox',
+      checked: autoLaunchEnabled,
+      click: () => { 
+        const newState = setAutoLaunch(!autoLaunchEnabled);
+        updateContextMenu(); // Update menu to reflect new state
+      } 
+    },
     { type: 'separator' },
     { label: 'Quit', click: () => { 
       isQuitting = true;
@@ -175,6 +207,9 @@ app.whenReady().then(() => {
     createWindow();
     console.log('Window created successfully');
     
+    // Set auto-launch based on stored preference
+    setAutoLaunch(isAutoLaunchEnabled());
+    
     // Update tray title 5 times per second (200ms)
     setInterval(updateTrayTitle, 200);
   } catch (error) {
@@ -212,4 +247,13 @@ ipcMain.handle('save-salary-info', (event, data) => {
   store.set('workStart', data.workStart);
   store.set('workEnd', data.workEnd);
   return true;
+});
+
+// Add IPC handler for auto-launch setting
+ipcMain.handle('get-auto-launch', () => {
+  return isAutoLaunchEnabled();
+});
+
+ipcMain.handle('set-auto-launch', (event, enabled) => {
+  return setAutoLaunch(enabled);
 });

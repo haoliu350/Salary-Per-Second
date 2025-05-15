@@ -1,6 +1,6 @@
 {
   "name": "running-salary",
-  "productName": "Salary Calculator",
+  "productName": "Salary per Second",
   "version": "1.0.0",
   "description": "A menu bar app that calculates how much you've earned during your workday",
   "main": "main.js",
