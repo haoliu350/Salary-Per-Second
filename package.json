@@ -1,7 +1,7 @@
 {
   "name": "running-salary",
   "productName": "Salary In Second",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A menu bar app that calculates how much you've earned during your workday",
   "main": "main.js",
   "scripts": {
