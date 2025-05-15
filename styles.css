@@ -200,3 +200,35 @@ button:disabled {
 #annual-salary {
   padding-left: 25px;
 }
+
+.tool-tip-box {
+  position: relative;
+  cursor: help;
+}
+
+.tool-tip-box:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  border-radius: 6px;
+  font-size: 14px;
+  white-space: nowrap;
+  z-index: 100;
+  margin-bottom: 10px;
+}
+
+.tool-tip-box:hover::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.8);
+  margin-bottom: 4px;
+}

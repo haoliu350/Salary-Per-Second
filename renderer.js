@@ -105,8 +105,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       maximumFractionDigits: 2
     });
 
-    console.log('Daily salary:', dailySalary);
-
     // Calculate federal and state tax per day
     const annualFederalTax = currentTaxes.federal;
     const annualStateTax = currentTaxes.state;
@@ -135,9 +133,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       earnedToday = minutesWorked * salaryPerMinute;
       taxPaidToday = minutesWorked * taxPerMinute;
     }
-    
-    console.log('Earned today:', earnedToday);
-    console.log('Tax paid today:', taxPaidToday);
+  
+    const totalBox = document.querySelector('.total-box');
+    totalBox.title = 'Pre-tax deductions not included (e.g., Social Security, 401K, Medical).';
+
+    const earningBox = document.querySelector('.earning-box');
+    const earnedPercent = Number(((earnedToday / dailyAfterTax) * 100).toFixed(2));
+    earningBox.title = `How much you earned today: ${earnedPercent}%`;
 
     // Format and display values
     earningsDisplay.textContent = earnedToday.toLocaleString('en-US', {
@@ -147,6 +149,22 @@ document.addEventListener('DOMContentLoaded', async () => {
       maximumFractionDigits: 2
     });
 
+    // Update tax display and tooltip
+    const taxBox = document.querySelector('.tax-box');
+    const federalTaxFormatted = (annualFederalTax / (5 * 52)).toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+    const stateTaxFormatted = (annualStateTax / (5 * 52)).toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+    taxBox.title = `Federal: ${federalTaxFormatted} and State: ${stateTaxFormatted}`;
+    
     taxPaidDisplay.textContent = taxPaidToday.toLocaleString('en-US', {
       style: 'currency',
       currency: 'USD',

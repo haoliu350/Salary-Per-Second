@@ -8,7 +8,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Salary Calculator</h1>
+    <h1>Income Calculator</h1>
     
     <div class="content-wrapper">
       <div class="input-section">
@@ -95,24 +95,24 @@
         <div class="earnings-container">
           <div class="earnings-box">
             <h2>Daily Income</h2>
-            <div id="daily-income-display">$0.00</div>
+            <div id="daily-income-display" class="tool-tip-box total-box">$0.00</div>
           </div>
           
           <div class="earnings-box">
             <h2>Current Earnings</h2>
-            <div id="earnings-display">$0.00</div>
+            <div id="earnings-display" class="tool-tip-box earning-box">$0.00</div>
           </div>
 
-          <div class="earnings-box">
-            <h2>Taxes Paid Today</h2>
-            <div id="tax-paid-display">$0.00</div>
+          <div class="earnings-box" title="">
+            <h2>Taxes withholding</h2>
+            <div id="tax-paid-display" class="tool-tip-box tax-box">$0.00</div>
           </div>
         </div>
       </div>
     </div>
     
     <div class="disclaimer">
-      <p>Note: Tax calculations are rough estimates based on individual filing status and a standard 5-day work week.</p>
+      <p>Note: Tax calculations are rough estimates; actual taxes vary by filing status, location, and circumstances.</p>
     </div>
   </div>
   
