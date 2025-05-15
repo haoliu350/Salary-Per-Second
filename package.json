@@ -1,0 +1,28 @@
+{
+  "name": "running-salary",
+  "productName": "Salary Calculator",
+  "version": "1.0.0",
+  "description": "A menu bar app that calculates how much you've earned during your workday",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "package": "electron-builder --mac"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.6.4"
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0"
+  },
+  "build": {
+    "appId": "com.yourdomain.runningsalary",
+    "mac": {
+      "category": "public.app-category.finance",
+      "target": "dmg"
+    }
+  }
+}

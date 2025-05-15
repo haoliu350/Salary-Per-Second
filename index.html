@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Salary Per Second</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Salary Calculator</h1>
+    
+    <form id="salary-form">
+      <div class="form-group">
+        <label for="annual-salary">Annual Salary ($)</label>
+        <input type="number" id="annual-salary" min="0" step="1000" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="work-start">Work Start Time</label>
+        <input type="time" id="work-start" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="work-end">Work End Time</label>
+        <input type="time" id="work-end" required>
+      </div>
+      
+      <button type="submit" id="save-button">Save</button>
+    </form>
+    
+    <div class="current-earnings">
+      <h2>Current Earnings Today</h2>
+      <div id="earnings-display">$0.00</div>
+    </div>
+  </div>
+  
+  <script src="renderer.js"></script>
+</body>
+</html>
