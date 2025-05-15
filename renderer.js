@@ -1,6 +1,32 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const salaryForm = document.getElementById('salary-form');
+  
+  // Format salary input
   const annualSalaryInput = document.getElementById('annual-salary');
+  
+  function formatSalary(value) {
+    // Remove any non-digit characters
+    const number = value.replace(/\D/g, '');
+    // Format with commas
+    return number.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+  
+  annualSalaryInput.addEventListener('input', (e) => {
+    const cursorPosition = e.target.selectionStart;
+    const unformattedValue = e.target.value.replace(/,/g, '');
+    const formattedValue = formatSalary(unformattedValue);
+    e.target.value = formattedValue;
+    
+    // Restore cursor position
+    const addedCommas = (formattedValue.match(/,/g) || []).length;
+    const previousCommas = (e.target.value.substring(0, cursorPosition).match(/,/g) || []).length;
+    e.target.setSelectionRange(cursorPosition + addedCommas - previousCommas, cursorPosition + addedCommas - previousCommas);
+  });
+
+  // When using the value for calculations, remember to remove commas
+  function getNumericValue(value) {
+    return parseFloat(value.replace(/,/g, '')) || 0;
+  }
   const workStartInput = document.getElementById('work-start');
   const workEndInput = document.getElementById('work-end');
   const stateSelect = document.getElementById('state');
@@ -31,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   let currentTaxes = { federal: 0, state: 0 };
   
   async function updateTaxes() {
-    const annualSalary = parseFloat(annualSalaryInput.value);
+    const annualSalary = getNumericValue(annualSalaryInput.value);
     const state = stateSelect.value;
     if (annualSalary && state) {
       currentTaxes = await window.salaryAPI.calculateTaxes(annualSalary, state);
@@ -43,8 +69,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   await updateTaxes();
   
   // Update earnings display
+  // Update your updateEarningsDisplay function to use getNumericValue
   function updateEarningsDisplay() {
-    const annualSalary = parseFloat(annualSalaryInput.value);
+    const annualSalary = getNumericValue(annualSalaryInput.value);
     const workStart = workStartInput.value;
     const workEnd = workEndInput.value;
     
@@ -81,8 +108,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('Daily salary:', dailySalary);
 
     // Calculate federal and state tax per day
-    // const annualFederalTax = 1234; //window.salaryAPI.calculateFederalTax(annualSalary);
-    // const annualStateTax = 1234; //window.salaryAPI.calculateStateTax(annualSalary, state);
     const annualFederalTax = currentTaxes.federal;
     const annualStateTax = currentTaxes.state;
     const dailyTotalTax = (annualFederalTax + annualStateTax) / (5 * 52);
@@ -138,7 +163,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     e.preventDefault();
     
     const data = {
-      annualSalary: parseFloat(annualSalaryInput.value),
+      annualSalary: getNumericValue(annualSalaryInput.value), // Use getNumericValue to remove commas
       workStart: workStartInput.value,
       workEnd: workEndInput.value,
       state: stateSelect.value

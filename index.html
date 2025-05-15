@@ -3,103 +3,116 @@
 <head>
   <meta charset="UTF-8">
   <title>Salary Per Second</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="container">
     <h1>Salary Calculator</h1>
     
-    <form id="salary-form">
-      <div class="form-group">
-        <label for="annual-salary">Annual Salary ($)</label>
-        <input type="number" id="annual-salary" min="0" step="1000" required>
+    <div class="content-wrapper">
+      <div class="input-section">
+        <form id="salary-form">
+          <div class="form-group">
+            <label for="annual-salary">Annual Salary</label>
+            <div class="salary-input-wrapper">
+              <span class="currency-symbol">$</span>
+              <input type="text" id="annual-salary" min="0" required pattern="[0-9,]*" inputmode="numeric">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="state">State</label>
+            <select id="state" required>
+              <option value="alabama">Alabama</option>
+              <option value="alaska">Alaska</option>
+              <option value="arizona">Arizona</option>
+              <option value="arkansas">Arkansas</option>
+              <option value="california" selected>California</option>
+              <option value="colorado">Colorado</option>
+              <option value="connecticut">Connecticut</option>
+              <option value="delaware">Delaware</option>
+              <option value="florida">Florida</option>
+              <option value="georgia">Georgia</option>
+              <option value="hawaii">Hawaii</option>
+              <option value="idaho">Idaho</option>
+              <option value="illinois">Illinois</option>
+              <option value="indiana">Indiana</option>
+              <option value="iowa">Iowa</option>
+              <option value="kansas">Kansas</option>
+              <option value="kentucky">Kentucky</option>
+              <option value="louisiana">Louisiana</option>
+              <option value="maine">Maine</option>
+              <option value="maryland">Maryland</option>
+              <option value="massachusetts">Massachusetts</option>
+              <option value="michigan">Michigan</option>
+              <option value="minnesota">Minnesota</option>
+              <option value="mississippi">Mississippi</option>
+              <option value="missouri">Missouri</option>
+              <option value="montana">Montana</option>
+              <option value="nebraska">Nebraska</option>
+              <option value="nevada">Nevada</option>
+              <option value="new hampshire">New Hampshire</option>
+              <option value="new jersey">New Jersey</option>
+              <option value="new mexico">New Mexico</option>
+              <option value="new york">New York</option>
+              <option value="north carolina">North Carolina</option>
+              <option value="north dakota">North Dakota</option>
+              <option value="ohio">Ohio</option>
+              <option value="oklahoma">Oklahoma</option>
+              <option value="oregon">Oregon</option>
+              <option value="pennsylvania">Pennsylvania</option>
+              <option value="rhode island">Rhode Island</option>
+              <option value="south carolina">South Carolina</option>
+              <option value="south dakota">South Dakota</option>
+              <option value="tennessee">Tennessee</option>
+              <option value="texas">Texas</option>
+              <option value="utah">Utah</option>
+              <option value="vermont">Vermont</option>
+              <option value="virginia">Virginia</option>
+              <option value="washington">Washington</option>
+              <option value="west virginia">West Virginia</option>
+              <option value="wisconsin">Wisconsin</option>
+              <option value="wyoming">Wyoming</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="work-start">Work Start Time</label>
+            <input type="time" id="work-start" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="work-end">Work End Time</label>
+            <input type="time" id="work-end" required>
+          </div>
+          
+          <button type="submit" id="save-button">Save</button>
+        </form>
       </div>
       
-      <div class="form-group">
-        <label for="state">State</label>
-        <select id="state" required>
-          <option value="alabama">Alabama</option>
-          <option value="alaska">Alaska</option>
-          <option value="arizona">Arizona</option>
-          <option value="arkansas">Arkansas</option>
-          <option value="california" selected>California</option>
-          <option value="colorado">Colorado</option>
-          <option value="connecticut">Connecticut</option>
-          <option value="delaware">Delaware</option>
-          <option value="florida">Florida</option>
-          <option value="georgia">Georgia</option>
-          <option value="hawaii">Hawaii</option>
-          <option value="idaho">Idaho</option>
-          <option value="illinois">Illinois</option>
-          <option value="indiana">Indiana</option>
-          <option value="iowa">Iowa</option>
-          <option value="kansas">Kansas</option>
-          <option value="kentucky">Kentucky</option>
-          <option value="louisiana">Louisiana</option>
-          <option value="maine">Maine</option>
-          <option value="maryland">Maryland</option>
-          <option value="massachusetts">Massachusetts</option>
-          <option value="michigan">Michigan</option>
-          <option value="minnesota">Minnesota</option>
-          <option value="mississippi">Mississippi</option>
-          <option value="missouri">Missouri</option>
-          <option value="montana">Montana</option>
-          <option value="nebraska">Nebraska</option>
-          <option value="nevada">Nevada</option>
-          <option value="new hampshire">New Hampshire</option>
-          <option value="new jersey">New Jersey</option>
-          <option value="new mexico">New Mexico</option>
-          <option value="new york">New York</option>
-          <option value="north carolina">North Carolina</option>
-          <option value="north dakota">North Dakota</option>
-          <option value="ohio">Ohio</option>
-          <option value="oklahoma">Oklahoma</option>
-          <option value="oregon">Oregon</option>
-          <option value="pennsylvania">Pennsylvania</option>
-          <option value="rhode island">Rhode Island</option>
-          <option value="south carolina">South Carolina</option>
-          <option value="south dakota">South Dakota</option>
-          <option value="tennessee">Tennessee</option>
-          <option value="texas">Texas</option>
-          <option value="utah">Utah</option>
-          <option value="vermont">Vermont</option>
-          <option value="virginia">Virginia</option>
-          <option value="washington">Washington</option>
-          <option value="west virginia">West Virginia</option>
-          <option value="wisconsin">Wisconsin</option>
-          <option value="wyoming">Wyoming</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label for="work-start">Work Start Time</label>
-        <input type="time" id="work-start" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="work-end">Work End Time</label>
-        <input type="time" id="work-end" required>
-      </div>
-      
-      <button type="submit" id="save-button">Save</button>
-    </form>
-    
-    <div class="earnings-container">
-      <div class="earnings-box">
-        <h2>Daily Income</h2>
-        <div id="daily-income-display">$0.00</div>
-      </div>
-      
-      <div class="earnings-box">
-        <h2>Current Earnings</h2>
-        <div id="earnings-display">$0.00</div>
-      </div>
+      <div class="display-section">
+        <div class="earnings-container">
+          <div class="earnings-box">
+            <h2>Daily Income</h2>
+            <div id="daily-income-display">$0.00</div>
+          </div>
+          
+          <div class="earnings-box">
+            <h2>Current Earnings</h2>
+            <div id="earnings-display">$0.00</div>
+          </div>
 
-      <div class="earnings-box">
-        <h2>Taxes Paid Today</h2>
-        <div id="tax-paid-display">$0.00</div>
+          <div class="earnings-box">
+            <h2>Taxes Paid Today</h2>
+            <div id="tax-paid-display">$0.00</div>
+          </div>
+        </div>
       </div>
+    </div>
+    
+    <div class="disclaimer">
+      <p>Note: Tax calculations are rough estimates based on individual filing status and a standard 5-day work week.</p>
     </div>
   </div>
   

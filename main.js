@@ -36,8 +36,8 @@ function isAutoLaunchEnabled() {
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 500,
-    height: 825,
+    width: 900,
+    height: 700,
     show: false,
     frame: true,
     resizable: false,
@@ -182,7 +182,7 @@ function calculateEarnings() {
     earnedToday = 0;
   } else if (currentTimeInMinutes > workEndInMinutes) {
     // After work ends
-    earnedToday = dailySalary;
+    earnedToday = dailyAfterTax;  // Changed from dailySalary to dailyAfterTax
   } else {
     // During work hours
     const minutesWorked = currentTimeInMinutes - workStartInMinutes;
@@ -236,15 +236,9 @@ process.on('uncaughtException', (error) => {
 
 // Modify the app.whenReady() section
 app.whenReady().then(() => {
-  console.log('App is ready');
   try {
-    console.log('Creating tray...');
     createTray();
-    console.log('Tray created successfully');
-    
-    console.log('Creating window...');
     createWindow();
-    console.log('Window created successfully');
     
     // Set auto-launch based on stored preference
     setAutoLaunch(isAutoLaunchEnabled());
@@ -274,8 +268,9 @@ app.on('before-quit', () => {
 
 // IPC handlers for communication with renderer
 ipcMain.handle('get-salary-info', () => {
+  const salary = store.get('annualSalary', DEFAULT_ANNUAL_SALARY);
   return {
-    annualSalary: store.get('annualSalary', DEFAULT_ANNUAL_SALARY),
+    annualSalary: salary.toLocaleString('en-US'), // Format the number with commas
     workStart: store.get('workStart', DEFAULT_WORK_START),
     workEnd: store.get('workEnd', DEFAULT_WORK_END),
     state: store.get('state', DEFAULT_STATE)
@@ -283,7 +278,7 @@ ipcMain.handle('get-salary-info', () => {
 });
 
 ipcMain.handle('save-salary-info', (event, data) => {
-  store.set('annualSalary', data.annualSalary);
+  store.set('annualSalary', parseFloat(data.annualSalary)); // Ensure we store a number
   store.set('workStart', data.workStart);
   store.set('workEnd', data.workEnd);
   store.set('state', data.state);
