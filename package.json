@@ -1,6 +1,6 @@
 {
   "name": "running-salary",
-  "productName": "Salary per Second",
+  "productName": "Salary In Second",
   "version": "1.0.0",
   "description": "A menu bar app that calculates how much you've earned during your workday",
   "main": "main.js",
@@ -19,10 +19,12 @@
     "electron-store": "^8.1.0"
   },
   "build": {
-    "appId": "com.yourdomain.runningsalary",
+    "appId": "com.cap1.runningsalary",
+    "productName": "Salary In Seconds",
     "mac": {
       "category": "public.app-category.finance",
-      "target": "dmg"
+      "target": "dmg",
+      "icon": "build/icons/mac/icon.icns"
     }
   }
 }

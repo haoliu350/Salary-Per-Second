@@ -31,7 +31,7 @@ jspm_packages/
 
 # Build output
 dist/
-build/
+# build/
 
 # IDE and editor files
 .idea/

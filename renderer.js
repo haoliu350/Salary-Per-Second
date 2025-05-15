@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const workEndInput = document.getElementById('work-end');
   const earningsDisplay = document.getElementById('earnings-display');
   const autoLaunchCheckbox = document.getElementById('auto-launch');
+  const dailyIncomeDisplay = document.getElementById('daily-income-display');
   
   // Load saved values
   const savedInfo = await window.salaryAPI.getSalaryInfo();
@@ -53,6 +54,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Calculate daily salary (assuming 5 workdays per week, 52 weeks per year)
     const dailySalary = annualSalary / (5 * 52);
     
+    // Update daily income display
+    dailyIncomeDisplay.textContent = dailySalary.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+
     // Calculate salary per minute
     const salaryPerMinute = dailySalary / totalWorkMinutes;
     

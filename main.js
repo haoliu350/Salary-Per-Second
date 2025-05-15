@@ -34,7 +34,7 @@ function isAutoLaunchEnabled() {
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 500,
-    height: 600,
+    height: 825,
     show: false,
     frame: true,
     resizable: false,
