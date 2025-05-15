@@ -3,15 +3,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   const annualSalaryInput = document.getElementById('annual-salary');
   const workStartInput = document.getElementById('work-start');
   const workEndInput = document.getElementById('work-end');
+  const stateSelect = document.getElementById('state');
   const earningsDisplay = document.getElementById('earnings-display');
   const autoLaunchCheckbox = document.getElementById('auto-launch');
   const dailyIncomeDisplay = document.getElementById('daily-income-display');
+  const taxPaidDisplay = document.getElementById('tax-paid-display');
   
   // Load saved values
   const savedInfo = await window.salaryAPI.getSalaryInfo();
   annualSalaryInput.value = savedInfo.annualSalary;
   workStartInput.value = savedInfo.workStart;
   workEndInput.value = savedInfo.workEnd;
+  stateSelect.value = savedInfo.state?.toLowerCase() || 'california';
   
   // Load auto-launch setting
   const autoLaunchEnabled = await window.salaryAPI.getAutoLaunch();
@@ -24,10 +27,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
   
+  // Get initial tax calculations
+  let currentTaxes = { federal: 0, state: 0 };
+  
+  async function updateTaxes() {
+    const annualSalary = parseFloat(annualSalaryInput.value);
+    const state = stateSelect.value;
+    if (annualSalary && state) {
+      currentTaxes = await window.salaryAPI.calculateTaxes(annualSalary, state);
+    }
+    return currentTaxes;
+  }
+  
+  // Initial tax calculation
+  await updateTaxes();
+  
   // Update earnings display
   function updateEarningsDisplay() {
-    // This is just for display in the app window
-    // The actual calculation happens in the main process
     const annualSalary = parseFloat(annualSalaryInput.value);
     const workStart = workStartInput.value;
     const workEnd = workEndInput.value;
@@ -62,26 +78,51 @@ document.addEventListener('DOMContentLoaded', async () => {
       maximumFractionDigits: 2
     });
 
-    // Calculate salary per minute
-    const salaryPerMinute = dailySalary / totalWorkMinutes;
+    console.log('Daily salary:', dailySalary);
+
+    // Calculate federal and state tax per day
+    // const annualFederalTax = 1234; //window.salaryAPI.calculateFederalTax(annualSalary);
+    // const annualStateTax = 1234; //window.salaryAPI.calculateStateTax(annualSalary, state);
+    const annualFederalTax = currentTaxes.federal;
+    const annualStateTax = currentTaxes.state;
+    const dailyTotalTax = (annualFederalTax + annualStateTax) / (5 * 52);
+    const taxPerMinute = dailyTotalTax / totalWorkMinutes;
+
+    // Calculate salary per minute (after tax)
+    const dailyAfterTax = dailySalary - dailyTotalTax;
+    const salaryPerMinute = dailyAfterTax / totalWorkMinutes;
     
-    // Calculate how much earned so far today
+    // Calculate earnings and tax paid so far today
     let earnedToday = 0;
+    let taxPaidToday = 0;
     
     if (currentTimeInMinutes < workStartInMinutes) {
       // Before work starts
       earnedToday = 0;
+      taxPaidToday = 0;
     } else if (currentTimeInMinutes > workEndInMinutes) {
       // After work ends
-      earnedToday = dailySalary;
+      earnedToday = dailyAfterTax;
+      taxPaidToday = dailyTotalTax;
     } else {
       // During work hours
       const minutesWorked = currentTimeInMinutes - workStartInMinutes;
       earnedToday = minutesWorked * salaryPerMinute;
+      taxPaidToday = minutesWorked * taxPerMinute;
     }
     
-    // Format as currency
+    console.log('Earned today:', earnedToday);
+    console.log('Tax paid today:', taxPaidToday);
+
+    // Format and display values
     earningsDisplay.textContent = earnedToday.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+
+    taxPaidDisplay.textContent = taxPaidToday.toLocaleString('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 2,
@@ -89,8 +130,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
   
-  // Update earnings display every 200ms (5 times per second)
-  setInterval(updateEarningsDisplay, 200);
+  // Update earnings display every second
+  setInterval(updateEarningsDisplay, 1000);
   
   // Handle form submission
   salaryForm.addEventListener('submit', async (e) => {
@@ -99,10 +140,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const data = {
       annualSalary: parseFloat(annualSalaryInput.value),
       workStart: workStartInput.value,
-      workEnd: workEndInput.value
+      workEnd: workEndInput.value,
+      state: stateSelect.value
     };
     
     await window.salaryAPI.saveSalaryInfo(data);
+    
+    // Update tax calculations after saving
+    await updateTaxes();
     
     // Immediately update the earnings display with new values
     updateEarningsDisplay();

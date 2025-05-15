@@ -1,6 +1,8 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage } = require('electron');
 const path = require('path');
 const Store = require('electron-store');
+const { calculateStateTax } = require('./stateTax');
+const { calculateFederalTax } = require('./federalTax');
 
 // Prevent garbage collection
 let tray = null;
@@ -11,10 +13,11 @@ let isQuitting = false;
 const store = new Store();
 
 // Default values
-const DEFAULT_ANNUAL_SALARY = 120000;
+const DEFAULT_ANNUAL_SALARY = 85000;
 const DEFAULT_WORK_START = '09:00';
 const DEFAULT_WORK_END = '17:00';
 const DEFAULT_AUTO_LAUNCH = false;
+const DEFAULT_STATE = 'CA';
 
 // Auto-launch setting
 function setAutoLaunch(enabled) {
@@ -134,6 +137,7 @@ function calculateEarnings() {
   const annualSalary = store.get('annualSalary', DEFAULT_ANNUAL_SALARY);
   const workStart = store.get('workStart', DEFAULT_WORK_START);
   const workEnd = store.get('workEnd', DEFAULT_WORK_END);
+  const state = store.get('state', DEFAULT_STATE);
   
   const now = new Date();
   const currentHours = now.getHours();
@@ -155,8 +159,20 @@ function calculateEarnings() {
   // Calculate daily salary (assuming 5 workdays per week, 52 weeks per year)
   const dailySalary = annualSalary / (5 * 52);
   
-  // Calculate salary per minute
-  const salaryPerMinute = dailySalary / totalWorkMinutes;
+  // Calculate federal tax per day
+  const annualFederalTax = calculateFederalTax(annualSalary);
+  const dailyFederalTax = annualFederalTax / (5 * 52);
+
+  // Calculate state tax per day
+  const annualStateTax = calculateStateTax(annualSalary, state);
+  const dailyStateTax = annualStateTax / (5 * 52);
+
+  // Calculate salary per minute (after state tax)
+  const dailyAfterTax = dailySalary - dailyFederalTax - dailyStateTax;
+  const salaryPerMinute = dailyAfterTax / totalWorkMinutes;
+
+  // Calculate tax per minute
+  const taxTotalPerMinute = (dailyFederalTax + dailyStateTax) / totalWorkMinutes;
   
   // Calculate how much earned so far today
   let earnedToday = 0;
@@ -172,20 +188,43 @@ function calculateEarnings() {
     const minutesWorked = currentTimeInMinutes - workStartInMinutes;
     earnedToday = minutesWorked * salaryPerMinute;
   }
+
+  // Calculate how much tax paied so far today
+  let taxPaidToday = 0;
   
-  // Format as currency
-  return earnedToday.toLocaleString('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
+  if (currentTimeInMinutes < workStartInMinutes) {
+    // Before work starts
+    taxPaidToday = 0;
+  } else if (currentTimeInMinutes > workEndInMinutes) {
+    // After work ends
+    taxPaidToday = dailyFederalTax + dailyStateTax;
+  } else {
+    // During work hours
+    const minutesWorked = currentTimeInMinutes - workStartInMinutes;
+    taxPaidToday = minutesWorked * taxTotalPerMinute;
+  }
+  
+  // Format both values as currency
+  return {
+    earned: earnedToday.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }),
+    taxPaid: taxPaidToday.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
+  };
 }
 
 // Update the tray title with current earnings
 function updateTrayTitle() {
-  const earnings = calculateEarnings();
-  tray.setTitle(earnings, {
+  const { earned, taxPaid } = calculateEarnings();
+  tray.setTitle(earned, {
     fontType: 'monospacedDigit'
   });
 }
@@ -210,8 +249,8 @@ app.whenReady().then(() => {
     // Set auto-launch based on stored preference
     setAutoLaunch(isAutoLaunchEnabled());
     
-    // Update tray title 5 times per second (200ms)
-    setInterval(updateTrayTitle, 200);
+    // Update tray title 1 times per second (1000ms)
+    setInterval(updateTrayTitle, 1000);
   } catch (error) {
     console.error('Error during initialization:', error);
   }
@@ -238,7 +277,8 @@ ipcMain.handle('get-salary-info', () => {
   return {
     annualSalary: store.get('annualSalary', DEFAULT_ANNUAL_SALARY),
     workStart: store.get('workStart', DEFAULT_WORK_START),
-    workEnd: store.get('workEnd', DEFAULT_WORK_END)
+    workEnd: store.get('workEnd', DEFAULT_WORK_END),
+    state: store.get('state', DEFAULT_STATE)
   };
 });
 
@@ -246,6 +286,7 @@ ipcMain.handle('save-salary-info', (event, data) => {
   store.set('annualSalary', data.annualSalary);
   store.set('workStart', data.workStart);
   store.set('workEnd', data.workEnd);
+  store.set('state', data.state);
   return true;
 });
 
@@ -256,4 +297,12 @@ ipcMain.handle('get-auto-launch', () => {
 
 ipcMain.handle('set-auto-launch', (event, enabled) => {
   return setAutoLaunch(enabled);
+});
+
+// Add this with your other IPC handlers
+ipcMain.handle('calculate-taxes', (event, { salary, state }) => {
+  return {
+    federal: calculateFederalTax(salary),
+    state: calculateStateTax(salary, state)
+  };
 });
