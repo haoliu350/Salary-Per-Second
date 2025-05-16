@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   
     const totalBox = document.querySelector('.total-box');
-    totalBox.title = 'Pre-tax deductions not included (e.g., Social Security, 401K, Medical).';
+    totalBox.title = 'Pre-tax deductions not counted (e.g., Social Security, 401K, Medical).';
 
     const earningBox = document.querySelector('.earning-box');
     const earnedPercent = Number(((earnedToday / dailyAfterTax) * 100).toFixed(2));

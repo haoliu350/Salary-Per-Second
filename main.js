@@ -77,9 +77,9 @@ function createTray() {
     fontType: 'monospacedDigit'
   });
   
-  tray.on('click', () => {
-    toggleWindow();
-  });
+  // tray.on('click', () => {
+  //   toggleWindow();
+  // });
   
   // Context menu with auto-launch option
   updateContextMenu();
