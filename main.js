@@ -140,6 +140,17 @@ function calculateEarnings() {
   const state = store.get('state', DEFAULT_STATE);
   
   const now = new Date();
+  const day = now.getDay(); // 0 is Sunday, 6 is Saturday
+  const isWorkday = day >= 1 && day <= 5; // 1 to 5 represents Monday to Friday
+  
+  // If it's weekend, return zero values
+  if (!isWorkday) {
+    return {
+      earned: '$0.00',
+      taxPaid: '$0.00'
+    };
+  }
+  
   const currentHours = now.getHours();
   const currentMinutes = now.getMinutes();
   const currentSeconds = now.getSeconds();

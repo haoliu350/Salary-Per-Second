@@ -78,6 +78,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!annualSalary || !workStart || !workEnd) return;
     
     const now = new Date();
+    const day = now.getDay(); // 0 is Sunday, 6 is Saturday
+    const isWorkday = day >= 1 && day <= 5; // 1 to 5 represents Monday to Friday
+    
+    // If it's weekend, display zero values
+    if (!isWorkday) {
+      
+      const totalBox = document.querySelector('.total-box');
+      totalBox.title = 'Pre-tax deductions not counted (e.g., Social Security, 401K, Medical).';
+
+      const earningBox = document.querySelector('.earning-box');
+      earningBox.title = `How much you earned today: 100%`;
+
+      const taxBox = document.querySelector('.tax-box');
+      taxBox.title = `Federal: $0 and State: $0`;
+
+      earningsDisplay.textContent = '$0.00';
+      dailyIncomeDisplay.textContent = '$0.00';
+      taxPaidDisplay.textContent = '$0.00';
+      return;
+    }
+    
     const currentHours = now.getHours();
     const currentMinutes = now.getMinutes();
     const currentSeconds = now.getSeconds();
